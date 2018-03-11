@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,13 +24,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
+import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
+import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private static int SIGN_IN_REQUEST_CODE = 1;
     private FirebaseListAdapter<ChatMessage> adapter;
     RelativeLayout activity_main;
-    FloatingActionButton fab;
+
+    //Add Emojicon
+    EmojiconEditText emojiconEditText;
+    ImageView emojiButton,submitButton;
+    EmojIconActions emojIconActions;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -76,14 +84,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         activity_main = (RelativeLayout) findViewById(R.id.activity_main);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        //Add Emoji
+        emojiButton = (ImageView)findViewById(R.id.emoji_button);
+        submitButton = (ImageView)findViewById(R.id.submit_button);
+        emojiconEditText = (EmojiconEditText)findViewById(R.id.emojicon_edit_text);
+        emojIconActions = new EmojIconActions(getApplicationContext(),activity_main,emojiButton,emojiconEditText);
+        emojIconActions.ShowEmojicon();
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                EditText input = (EditText) findViewById(R.id.input);
-                FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(input.getText().toString(),
+            public void onClick(View view) {
+                FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
                         FirebaseAuth.getInstance().getCurrentUser().getEmail()));
-                input.setText("");
+                emojiconEditText.setText("");
+                emojiconEditText.requestFocus();
             }
         });
 
